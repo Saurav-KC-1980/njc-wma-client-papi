@@ -1,0 +1,20 @@
+http:
+  
+  protocol: "http"
+  basePath: "/"
+financial cloud sapi:
+  planPath: "/plandata/{id}"
+  clientPath: "clientProfile/{id}"
+  
+clientProfile:
+  profilePath: "/client/{id}"
+  host: "njc-wma-salesforce-sapi.us-e2.cloudhub.io"
+asset:
+  host: "njc-wma-salesforce-sapi.us-e2.cloudhub.io"
+  assetPath: "/asset/{id}"
+liability:
+  host: "njc-wma-salesforce-sapi.us-e2.cloudhub.io"
+  liabilityPath: "/liability/{id}"
+income: 
+  host: "njc-wma-salesforce-sapi.us-e2.cloudhub.io"
+  incomePath: "/income/{id}"

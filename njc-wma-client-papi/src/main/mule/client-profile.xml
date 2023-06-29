@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="1bb2afcb-07fa-40c6-83b6-6d30ce0db98a" >
+		<http:request-connection host="njc-wma-salesforce-sapi.us-e2.cloudhub.io" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="77df7dd4-491b-479e-9d04-0bab935d817a" >
+		<http:request-connection host="njc-wma-salesforce-sapi.us-e2.cloudhub.io" />
+	</http:request-config>
+	<flow name="wma-client-profiledata-flow" doc:id="e3c1eeb1-d6bd-44e3-9597-4af8049504f6">
+		<http:request method="GET" doc:name="Request" doc:id="ff1e442f-32a3-4a32-bb99-3d94543b79a9" config-ref="HTTP_Request_configuration" path="/client/{Id}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"Id" : vars.clientId
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"clientId" : vars.clientId
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="f390db05-5d3d-4db3-aaa2-1de5d5353a3b" message="#[payload]"/>
+	</flow>
+	<flow name="asset" doc:id="15219e08-e263-4d45-b8af-64351af6c90d" >
+		<scatter-gather doc:name="Scatter-Gather" doc:id="33696bae-dfd4-4cb3-a76d-091de545d791" >
+			<route >
+				<http:request method="GET" doc:name="Request" doc:id="74b54479-66f2-4695-a1ac-59365c3c5a3d" config-ref="HTTP_Request_configuration1" path="/asset/{Id}">
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"Id" : attributes.uriParams.id
+}]]]></http:uri-params>
+		</http:request>
+			</route>
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="a4213c7b-2f66-4d3f-8170-49ee11839e45" name="sub_flow"/>
+			</route>
+		</scatter-gather>
+		<set-variable value="#[payload[0].payload]" doc:name="Set Variable" doc:id="3fdbf09e-7327-47fb-8ecf-14a0c078a3c8" variableName="assets" />
+		<ee:transform doc:name="Transform Message" doc:id="79b6081c-52a8-40c9-af21-9ea9d0b53c62">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="financialAccount"><![CDATA[%dw 2.0
+output application/json
+---
+payload[1].payload.financialAccounts]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message1" doc:id="5db7d4fd-bd64-4454-85a5-31cc99658ff9">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json skipNullOn="everywhere"
+---
+vars.assets map (item,index)->
+{
+	"id": item.id,
+	"accountId": item.accountId,
+    "recordTypeId": item.recordTypeId,
+    "ownerType": item.ownerType,
+    "ownerId": item.ownerId,
+    "assetName": item.assetName,
+    "recordType": item.recordType,
+    "assetType": item.assetType,
+    "primaryOwner": item.primaryOwner,
+    "primaryOwnerId": item.primaryOwnerId,
+    "household": item.household,
+    "houseHoldId": item.houseHoldId,
+    "amount": item.amount,
+    "ownership": item.ownership,
+    "lastModifieddate": item.lastModifieddate,
+    "lastreferencedDate": item.lastreferencedDate,
+    "lastViewedDate": item.lastViewedDate,
+	
+	(vars.financialAccount filter ($.id == item.accountId) map (item1,index)->
+		{
+	financialAccountNumber: item1.financialAccountNumber,
+	financialServicetype: item1.insuredAmount,
+	accountStatus: item1.status,
+	minimumBalance:item1.minimumBalance,
+	balance:item1.balance,
+	loanEndDate:item1.loanEndDate,
+	cashBalance:item1.cashBalance,
+	productType:item1.productType,
+	productName:item1.productName,
+	bookedDate:item1.bookedDate,
+	loanTerm:item1.loanTermMonths,
+	loanFrequency:item1.paymentFrequency,
+	loanAmount:item1.loanAmount,
+	paymentAmount:item1.paymentAmount,
+	principalBalance:item1.principalBalance
+		}
+		
+		)
+	
+	
+	
+
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="366013a2-71b3-4dd4-8cbd-b706144f9f7e" message="#[payload]" />
+	</flow>
+	<flow name="liability" doc:id="420912f5-e327-47fe-b674-eb2d8449b4de">
+		<scatter-gather doc:name="Scatter-Gather" doc:id="b96efb37-2b29-477f-bc89-4593830102d4" >
+			<route >
+				<http:request method="GET" doc:name="fetchLiabilties" doc:id="346bd1ea-15fa-42bd-a1d1-b394a929fd68" config-ref="HTTP_Request_configuration1" path="/liability/{Id}">
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"Id" : attributes.uriParams.id 
+}]]]></http:uri-params>
+		</http:request>
+			</route>
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="d02dceab-7c30-419f-864e-f43233e40458" name="sub_flow"/>
+			</route>
+		</scatter-gather>
+		<set-variable value="#[payload[0].payload]" doc:name="Set Variable" doc:id="05424d46-a3d0-4d9d-9d42-12e78a52bc53" variableName="liabilities"/>
+		<ee:transform doc:name="Transform Message" doc:id="773f95dc-eea4-4bb2-b676-a19e10301604" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="financialAccount" ><![CDATA[%dw 2.0
+output application/json
+---
+payload[1].payload.financialAccounts]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="96e1b34e-2652-4c6d-bb53-1ee9509fb64a" />
+		<ee:transform doc:name="Transform Message1" doc:id="595164f7-48ea-428a-84dd-abdbb133e5d8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json skipNullOn="everywhere"
+---
+vars.liabilities map (item,index)->
+{
+	"id": item.id,
+    "recordTypeId": item.recordTypeId,
+    "ownerType": item.ownerType,
+    "ownerId": item.ownerId,
+    "liabilityName": item.assetName,
+    "recordType": item.recordType,
+    "liabilityType": item.assetType,
+    "primaryOwner": item.primaryOwner,
+    "primaryOwnerId": item.primaryOwnerId,
+    "household": item.household,
+    "houseHoldId": item.houseHoldId,
+    "amount": item.amount,
+    "ownership": item.ownership,
+    "lastModifieddate": item.lastModifieddate,
+    "lastreferencedDate": item.lastreferencedDate,
+    "lastViewedDate": item.lastViewedDate,
+	
+	(vars.financialAccount filter ($.id == item.accountId) map (item1,index)->
+		{
+	financialAccountNumber: item1.financialAccountNumber,
+	financialServicetype: item1.insuredAmount,
+	accountStatus: item1.status,
+	minimumBalance:item1.minimumBalance,
+	balance:item1.balance,
+	loanEndDate:item1.loanEndDate,
+	cashBalance:item1.cashBalance,
+	productType:item1.productType,
+	productName:item1.productName,
+	bookedDate:item1.bookedDate,
+	loanTerm:item1.loanTermMonths,
+	loanFrequency:item1.paymentFrequency,
+	loanAmount:item1.loanAmount,
+	paymentAmount:item1.paymentAmount,
+	principalBalance:item1.principalBalance
+		}
+		
+		)
+	
+	
+	
+
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="income" doc:id="ae4caa0c-d79b-49a1-941b-aaf4abfda982" >
+		<flow-ref doc:name="Flow Reference" doc:id="e384fa78-2ade-4e50-9187-a42dc709e1dd" name="sub_flow"/>
+		<ee:transform doc:name="Transform Message" doc:id="e598fb46-a523-42bd-9155-be9e6551fc43" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json skipNullOn="everywhere"
+---
+payload.financialAccounts filter($.recordTypeName =='Bank Account' or $.recordTypeName =='Savings Account' or $.recordTypeName =='Investment Account' or $.recordTypeName =='Checking Account' ) map(item, index)->
+{
+	
+    "id": item.id,
+    "planName": item.name,
+    
+    "primaryOwnerName": item.primaryOwnerName,
+    "primaryOwnerId": item.primaryOwnerId,
+    "jointOwnerName": item.jointOwnerName,
+    "jointOwnerId": item.jointOwnerId,
+    "balance": item.balance,
+     "currentValue": item.currentValue,
+    "frequency":item.accrualFrequency,
+    "currency":item.accountValuationCurrency,
+    "preferredCurrency": item.preferredCurrency
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="26ef9089-9982-4b93-b942-736044963444" message="#[payload]"/>
+	</flow>
+	<sub-flow name="orchestrate_sub_flow" doc:id="19007cdd-0445-4f8f-8696-20622b3c790f" >
+		<scatter-gather doc:name="Scatter-Gather" doc:id="109348c9-4015-456f-8bbd-580c0a31bc3b" >
+			<route >
+				<flow-ref doc:name="asset" doc:id="7c13bc7d-72aa-4a81-a855-6bcd40ff463f" name="asset"/>
+			</route>
+			<route >
+				<flow-ref doc:name="income" doc:id="a0da6990-fadb-48be-9d81-d47bde8d4936" name="income"/>
+			</route>
+			<route >
+				<flow-ref doc:name="liability" doc:id="1ec12e0c-126e-4ed0-95c8-487e8c283e89" name="liability"/>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="caec2213-49be-40c6-81e4-ec6b4ce653f1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+
+    "income": payload[1].payload ,
+    "assets": payload[0].payload ,
+    "liabilities": payload[2].payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="c5186aa8-9778-4318-83ae-26463cf07985" message="#[payload]"/>
+	</sub-flow>
+</mule>

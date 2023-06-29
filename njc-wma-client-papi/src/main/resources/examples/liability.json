@@ -1,0 +1,40 @@
+[
+  {
+    "assetName": "BMW Car Loan",
+    "assetType": "Auto Loan",
+    "recordType": "Liability",
+    "recordTypeId": "0125i000001pSFoAAM",
+    "accountId": "a085i00000I0Y60AAF",
+    "id": "a025i00000Pc7UzAAJ",
+    "primaryOwner": "Rachel Adams",
+    "primaryOwnerId": "0015i00000nflgqAAA",
+    "household": "Adams Household",
+    "houseHoldId": "0015i00000nflgdAAA",
+    "amount": "500000.0",
+    "ownership": "Individual",
+    "ownerType": "0015i00000nflgqAAA",
+    "ownerId": "0055i00000B0wQSAAZ",
+    "financialAccountDetails": {
+      "product": "TVS Auto Finance",
+      "financialAccountname": "BMW Car Loan",
+      "nickname": "BMW Car Loan",
+      "accountNumber": "CAR91234",
+      "stage": "complete",
+      "status": "open",
+      "minimumPayment": "25000.00",
+      "balance": "300000.00",
+      "balanceLastStatement": "290000.00",
+      "principalBalance": "250000.00",
+      "loanAmount": "500000.00",
+      "lastUpdated": "2023-05-31",
+      "lastTransactiondate": "2023-05-31T06:30:00.000+0000",
+      "loanTerm": "24",
+      "loanEnddate": "2024-06-30",
+      "dateOpened": "2022-06-01",
+      "paymentFrequency": "monthly",
+      "type": "Single Family home",
+      "applicationDate": "2022-05-01",
+      "interest": 5
+    }
+  }
+]

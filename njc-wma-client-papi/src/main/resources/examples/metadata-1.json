@@ -1,0 +1,87 @@
+{
+"primaryOwner": "Rachel Adams",
+"primaryOwnerId": "0015i00000nflgqAAA",
+"Assets":[
+{
+"id": "a025i00000Nz6VTAAZ",
+"assetName": "Adams' House",
+"assetType": "Real Estate",
+"recordType": "Asset",
+ "recordTypeId": "0125i000001pSFpAAM",
+   "jointOwner": "Nigel Adams (Sample)",
+    "jointOwnerId": "0015i00000nflgoAAA",
+    "household": "Adams Household",
+    "houseHoldId": "0015i00000nflgdAAA",
+    "amount": "1000000.0",
+    "description": "Mortgage Loan",
+    "ownership": "Joint",
+    "ownerType": "0015i00000nflgqAAA",
+    "ownerId": "0055i00000B0wQSAAZ"
+
+},
+{
+ "id": "a025i00000Pc7UgAAJ",
+"assetName": "Rachel_Jewelry",
+"assetType": "Jewelry",
+ "recordType": "Asset",
+  "recordTypeId": "0125i000001pSFpAAM",
+    "household": "Adams Household",
+    "houseHoldId": "0015i00000nflgdAAA",
+    "amount": "100000.0",
+    "ownership": "Individual",
+    "ownerType": "0015i00000nflgqAAA",
+    "ownerId": "0055i00000B0wQSAAZ",
+    "financialAccountDetails": {
+      "status": "closed",
+      "currentvalue": "115000.00",
+      "totalInvestment": "100000.00",
+      "totalWithdrawn": "0",
+      "netChange": "15000.00",
+      "type": "Managed Account",
+      "taxStatus": "Qualified",
+      "source": "Manual Entry",
+      "description": "Invested on Jewelery",
+      "balance": "115000.00",
+      "cashBalance": "110000.00",
+      "dateOpened": "2022-06-01"
+    }
+
+},
+{
+"id": "a025i00000Pc7UuAAJ",
+    "assetName": "BMW Car",
+ "assetType": "Automobile",
+    "recordType": "Asset",
+    "recordTypeId": "0125i000001pSFpAAM",
+ "household": "Adams Household",
+    "houseHoldId": "0015i00000nflgdAAA",
+    "amount": "500000.0",
+    "ownership": "Individual",
+    "ownerType": "0015i00000nflgqAAA",
+    "ownerId": "0055i00000B0wQSAAZ",
+    "financialAccountDetails": {
+      "product": "TVS Auto Finance",
+      "financialAccountname": "BMW Car Loan",
+      "nickname": "BMW Car Loan",
+      "accountNumber": "CAR91234",
+      "stage": "complete",
+      "status": "open",
+      "minimumPayment": "25000.00",
+      "balance": "300000.00",
+      "balanceLastStatement": "290000.00",
+      "principalBalance": "250000.00",
+      "loanAmount": "500000.00",
+      "lastUpdated": "2023-05-31",
+      "lastTransactiondate": "2023-05-31T06:30:00.000+0000",
+      "loanTerm": "24",
+      "loanEnddate": "2024-06-30",
+      "dateOpened": "2022-06-01",
+      "paymentFrequency": "monthly",
+      "type": "Single Family home",
+      "applicationDate": "2022-05-01",
+      "interest": 5
+
+}
+}
+]
+}

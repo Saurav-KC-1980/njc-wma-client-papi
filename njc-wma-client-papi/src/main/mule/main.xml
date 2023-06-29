@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="wma-client-fianacialdata-orchestration-papiFlow" doc:id="e91e1a0d-cb05-4790-9aee-2b0765954e8f" >
+		<set-variable value="#[attributes.uriParams.id]" doc:name="Set Variable" doc:id="67a62370-dd43-4a91-97f6-024e5206d1bc" variableName="clientId"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="1fb65f85-4c45-4918-b88d-3545e7843037" >
+			<route >
+				<flow-ref doc:name="wma-client-profiledata-flow" doc:id="96a1a246-b831-4dbf-9ade-a19c81900a6b" name="wma-client-profiledata-flow"/>
+			</route>
+			<route >
+				<flow-ref doc:name="sub_flow" doc:id="57167ec7-fc76-4fd2-a9fd-77cfe92b8ff7" name="sub_flow"/>
+			</route>
+			<route >
+				<flow-ref doc:name="orchestrate_sub_flow" doc:id="6614e222-66a7-4003-ad7a-50607b02fea0" name="orchestrate_sub_flow"/>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="a2b94817-2119-465f-a6c3-d351690fd44d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "clientProfile": (payload[0].payload[0].clientDetails)- "financialDetails",
+    "financialData": payload[1].payload.financialAccounts,
+   
+}++ payload[2].payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="04bd0a43-42b3-425b-8266-bff8cf15d1c6" message="#[payload]"/>
+	</flow>
+</mule>
